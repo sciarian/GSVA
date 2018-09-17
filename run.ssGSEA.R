@@ -1,17 +1,18 @@
-load('server-side//RData//lincs_signatures_cmpd.RData')
-load('server-side//RData//lincs_signatures_shrna.RData')
+#load('server-side//RData//lincs_signatures_cmpd.RData')     
+#load('server-side//RData//lincs_signatures_shrna.RData')    
 require(GSVA)
 require(GSA)
 
 #gurantee that rows are in the same order
 sum(rownames(lincs_signatures_cmpd) == rownames(lincs_signatures_shrna))
 
-msigdb          <-  GSA.read.gmt("client-side/meta.data/h.all.v6.1.entrez.gmt")
-genesets        <-  msigdb$genesets
-names(genesets) <-  msigdb$geneset.names 
-combined.expr.matrix    <- cbind(lincs_signatures_cmpd,lincs_signatures_shrna)
-intersected.gene        <- intersect(genesets[['HALLMARK_INTERFERON_GAMMA_RESPONSE']],rownames(lincs_signatures_cmpd)) # Great! 33 genes are covered by L1000
-intersected.gene        <- intersect(genesets[['HALLMARK_INTERFERON_ALPHA_RESPONSE']],rownames(lincs_signatures_cmpd)) # Oh, only 8 genes are covered by L1000
+
+msigdb          <-  GSA.read.gmt("client-side/meta.data/h.all.v6.1.entrez.gmt") #KEEP
+genesets        <-  msigdb$genesets                                             #KEEP
+names(genesets) <-  msigdb$geneset.names                                        #KEEP
+combined.expr.matrix    <- cbind(lincs_signatures_cmpd,lincs_signatures_shrna)  #REPLACE WITH EXPR 570
+#intersected.gene        <- intersect(genesets[['HALLMARK_INTERFERON_GAMMA_RESPONSE']],rownames(lincs_signatures_cmpd)) # Great! 33 genes are covered by L1000
+#intersected.gene        <- intersect(genesets[['HALLMARK_INTERFERON_ALPHA_RESPONSE']],rownames(lincs_signatures_cmpd)) # Oh, only 8 genes are covered by L1000
 
 oncogenic.geneset.gsea.results    <-  gsva(combined.expr.matrix, genesets[c('HALLMARK_INTERFERON_GAMMA_RESPONSE','HALLMARK_INTERFERON_ALPHA_RESPONSE')], method = 'ssgsea') #ggsea
 hist(oncogenic.geneset.gsea.results[1,],breaks=200)
